@@ -119,7 +119,7 @@ def check_citation_against_sentence(sentence: str, url: str) -> bool:
     score = response.nouls["supported"].noul
     if score < 0.66:
         logger.warning(
-            "Jev rejected claim from %s (score=%.3f, source_chars=%d): %s",
+            "Claim lacks support in retrieved text from %s (score=%.3f, source_chars=%d): %s",
             url,
             score,
             len(excerpt),
