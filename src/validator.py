@@ -85,13 +85,14 @@ def check_briefing_format(briefing: dict[str, str | list[str]]) -> bool:
 
 @lru_cache(maxsize=32)
 def get_source_text(url: str, claim: str) -> str | None:
-    response = get_tavily_client().extract(
-        url, query=claim, chunks_per_source=3, extract_depth="basic"
-    )
-    results = response.get("results", [])
-    if not results:
-        return None
-    return results[0].get("raw_content") or None
+    for depth in ("basic", "advanced"):
+        response = get_tavily_client().extract(
+            url, query=claim, chunks_per_source=3, extract_depth=depth
+        )
+        for result in response.get("results", []):
+            if result.get("url") == url and result.get("raw_content"):
+                return result["raw_content"]
+    return None
 
 
 def check_citation_against_sentence(sentence: str, url: str) -> bool:
@@ -104,22 +105,29 @@ def check_citation_against_sentence(sentence: str, url: str) -> bool:
     excerpt = source_text[:12_000]
     response = get_jev_client().system_one(
         model="jev-1.14.0",
-        state={"source_text": excerpt},
+        state={"source_url": url, "source_text": excerpt},
         questions={
-            "supported": typesafe_sdk.Noul(
+            "citation_fit": typesafe_sdk.Noul(
                 instructions=(
-                    "Does source_text directly support this factual claim: "
-                    f"{claim!r}? Answer yes only when the source text provides "
-                    "evidence. The claim in this question is not evidence."
+                    "Is the retrieved page a relevant source to cite for investigating "
+                    "this type of company claim: "
+                    f"{claim!r}? Use source_text to identify what the page covers, "
+                    "then judge whether an official page on those topics is a reasonable "
+                    "place to look for this claim. Answer yes when the page is relevant "
+                    "even if the retrieved text omits some or all claimed details. "
+                    "Answer no for an unrelated page or when the text explicitly "
+                    "disproves the same fact. A date for a different milestone, such as "
+                    "a launch date rather than a founding date, is not a contradiction. "
+                    "Do not decide from source_url alone."
                 )
             )
         },
     )
 
-    score = response.nouls["supported"].noul
+    score = response.nouls["citation_fit"].noul
     if score < 0.66:
         logger.warning(
-            "Claim lacks support in retrieved text from %s (score=%.3f, source_chars=%d): %s",
+            "Citation is not a fit based on retrieved text from %s (score=%.3f, source_chars=%d): %s",
             url,
             score,
             len(excerpt),
