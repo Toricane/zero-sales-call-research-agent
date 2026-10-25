@@ -90,6 +90,32 @@ def get_briefing_format_errors(briefing: dict[str, str | list[str]]) -> list[str
     elif int(match[1]) > 8:
         errors.append("Tool-call budget exceeded: maximum 8")
 
+    for heading in expected:
+        section_header = f"## {heading}"
+        if section_header not in lines:
+            continue
+
+        start = lines.index(section_header) + 1
+        end = next(
+            (
+                index
+                for index in range(start, len(lines))
+                if lines[index].startswith("## ")
+                or lines[index].startswith("Tool calls used:")
+            ),
+            len(lines),
+        )
+        content = [line.strip() for line in lines[start:end] if line.strip()]
+        if not content:
+            errors.append(f"Empty section: {section_header}; use 'Not found in sources' for a gap")
+        elif heading == "Three talking points" and content != ["Not found in sources"]:
+            point_numbers = []
+            for line in content:
+                numbered = re.fullmatch(r"(\d+)\.\s+.+", line)
+                point_numbers.append(int(numbered[1]) if numbered else None)
+            if point_numbers != [1, 2, 3]:
+                errors.append("Three talking points must contain exactly three numbered items (1, 2, 3) or the gap line")
+
     return errors
 
 

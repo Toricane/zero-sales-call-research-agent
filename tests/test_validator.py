@@ -17,6 +17,9 @@ rows = json.loads(
 @pytest.mark.parametrize("row", rows, ids=lambda row: row["sample_id"])
 def test_briefing(row):
     result = validate_briefing(row)
+    if not row["expected_valid"]:
+        for reason in result.reasons:
+            print(f"{row['sample_id']} rejected: {reason}")
     assert result.valid is row["expected_valid"], result.reasons
 
     expected_reasons = {
@@ -50,3 +53,48 @@ def test_fetched_but_unrelated_citation_is_rejected():
         and "Gusto provides payroll" in reason
         for reason in result.reasons
     ), result.reasons
+
+
+def test_tool_call_budget_is_enforced():
+    briefing = deepcopy(rows[2])
+    briefing["briefing_markdown"] = briefing["briefing_markdown"].replace(
+        "Tool calls used: 8", "Tool calls used: 9"
+    )
+
+    result = validate_briefing(briefing)
+
+    assert result.valid is False
+    assert "Tool-call budget exceeded: maximum 8" in result.reasons
+
+
+def test_empty_section_requires_gap_line():
+    briefing = deepcopy(rows[2])
+    briefing["briefing_markdown"] = briefing["briefing_markdown"].replace(
+        "## What changed in the last 90 days\nNot found in sources",
+        "## What changed in the last 90 days\n",
+    )
+
+    result = validate_briefing(briefing)
+
+    assert result.valid is False
+    assert any(
+        reason.startswith("Empty section: ## What changed in the last 90 days")
+        for reason in result.reasons
+    )
+
+
+def test_three_talking_points_are_required():
+    briefing = deepcopy(rows[2])
+    briefing["briefing_markdown"] = "\n".join(
+        line
+        for line in briefing["briefing_markdown"].splitlines()
+        if not line.startswith("3. ")
+    )
+
+    result = validate_briefing(briefing)
+
+    assert result.valid is False
+    assert any(
+        reason.startswith("Three talking points must contain exactly three numbered items")
+        for reason in result.reasons
+    )
