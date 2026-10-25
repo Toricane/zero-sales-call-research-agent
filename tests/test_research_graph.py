@@ -1,4 +1,5 @@
 from tavily import TavilyClient
+from tavily.errors import TimeoutError as TavilyTimeoutError
 
 from src.research_graph import ResearchState, build_graph
 from src.run_research import load_company
@@ -13,7 +14,7 @@ def test_first_search_timeout_goes_to_writer(monkeypatch, capsys):
     def raise_timeout(self, *args, **kwargs):
         nonlocal search_calls
         search_calls += 1
-        raise TimeoutError("Forced timeout for this test")
+        raise TavilyTimeoutError(10)
 
     monkeypatch.setattr(TavilyClient, "search", raise_timeout)
 

@@ -6,6 +6,7 @@ from urllib.parse import urlparse
 from dotenv import load_dotenv
 from langgraph.graph import END, START, StateGraph
 from tavily import TavilyClient
+from tavily.errors import TimeoutError as TavilyTimeoutError
 
 load_dotenv()
 
@@ -71,7 +72,7 @@ def search_once(state: ResearchState) -> dict[str, object]:
             )
 
         response = client.search(**search_options)
-    except TimeoutError:
+    except TavilyTimeoutError:
         return {
             "tool_calls_used": new_count,
             "search_failed": True,

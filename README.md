@@ -99,13 +99,13 @@ The additional citation test cites Asana's company page for a Gusto product clai
 
 ## Research graph run record
 
-The LangGraph research run selected TC-02 (Gymshark), a standard first-call case with recent news expected and no forced timeout. The graph reached the writer stub after two Tavily search calls, with eight retained sources and `search_failed=False`. [View the LangSmith trace](https://smith.langchain.com/public/120dac3d-0cc5-42f0-8447-c2d7daa73863/r/01a170b7-ecfd-7335-a48b-49814d798109?start_time=2026-10-25T01%3A41%3A04.381058Z).
+The LangGraph research run selected TC-02 (Gymshark), a standard first-call case with recent news expected and no forced timeout. The graph reached the writer stub after two Tavily search calls, with eight retained sources and `search_failed=False`. [View the LangSmith trace](https://smith.langchain.com/public/76cd63de-710e-47dc-a21d-ff5215d9c6d8/r/01a170bd-af26-76ee-a098-86ee23041ed3?start_time=2026-10-25T01%3A47%3A21.76691Z).
 
 Commands: `.\.venv\Scripts\python.exe -m pytest -q` and `.\.venv\Scripts\python.exe -m src.run_research`
 
 ```text
 ..............                                                                                                                                                                                                        [100%]
-14 passed in 39.76s
+14 passed in 40.83s
 Selected: TC-02 — Gymshark
 Website: https://www.gymshark.com
 First call: 2025-03-13
