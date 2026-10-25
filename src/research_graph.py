@@ -16,6 +16,7 @@ class ResearchState(TypedDict):
     sources: list[dict[str, str]]
     tool_calls_used: int
     search_failed: bool
+    briefing: str
 
 
 def plan_next_search(state: ResearchState) -> dict[str, str | None]:
@@ -118,13 +119,21 @@ def search_once(state: ResearchState) -> dict[str, object]:
 
 
 def writer_stub(state: ResearchState) -> dict[str, object]:
+    if state["search_failed"]:
+        stop_reason = "search returned no usable sources or timed out"
+    elif state["next_query"] is None:
+        stop_reason = "planner had no next query"
+    else:
+        stop_reason = "tool-call budget reached"
+
     print(
         "WRITER STUB REACHED — "
         f"calls={state['tool_calls_used']}, "
         f"sources={len(state['sources'])}, "
         f"search_failed={state['search_failed']}"
     )
-    return {}
+    print(f"Stop reason: {stop_reason}")
+    return {"briefing": ""}
 
 
 def build_graph(max_calls: int):

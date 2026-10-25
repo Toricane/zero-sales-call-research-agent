@@ -99,13 +99,13 @@ The additional citation test cites Asana's company page for a Gusto product clai
 
 ## Research graph run record
 
-The LangGraph research run selected TC-02 (Gymshark), a standard first-call case with recent news expected and no forced timeout. The graph reached the writer stub after two Tavily search calls, with eight retained sources and `search_failed=False`. [View the LangSmith trace](https://smith.langchain.com/public/20aca7ac-c78e-4ebf-8cec-52392d2fb9e6/r/01a170ad-fdf5-764e-8a74-57c6296583b1?start_time=2026-10-25T01%3A30%3A13.365126Z).
+The LangGraph research run selected TC-02 (Gymshark), a standard first-call case with recent news expected and no forced timeout. The graph reached the writer stub after two Tavily search calls, with eight retained sources and `search_failed=False`. [View the LangSmith trace](https://smith.langchain.com/public/120dac3d-0cc5-42f0-8447-c2d7daa73863/r/01a170b7-ecfd-7335-a48b-49814d798109?start_time=2026-10-25T01%3A41%3A04.381058Z).
 
 Commands: `.\.venv\Scripts\python.exe -m pytest -q` and `.\.venv\Scripts\python.exe -m src.run_research`
 
 ```text
-.............                                                                                                                                                                                                         [100%]
-13 passed in 18.86s
+..............                                                                                                                                                                                                        [100%]
+14 passed in 39.76s
 Selected: TC-02 — Gymshark
 Website: https://www.gymshark.com
 First call: 2025-03-13
@@ -113,9 +113,11 @@ Recent news expected: True
 Forced timeout: False
 Initial tool calls: 0
 WRITER STUB REACHED — calls=2, sources=8, search_failed=False
+Stop reason: planner had no next query
 Final tool calls: 2
 Final source count: 8
 Search failed: False
+Briefing generated: False
 Source 1: Gymshark - Wikipedia | undated | https://en.wikipedia.org/wiki/Gymshark
 Source 2: All Products | Women's Gym Clothes | Gymshark | undated | https://www.gymshark.com/collections/all-products/womens
 Source 3: About us | Gymshark | undated | https://www.gymshark.com/pages/about-us
@@ -126,7 +128,7 @@ Source 7: Gymshark names chief commerical officer - Retail Dive | Tue, 04 Mar 20
 Source 8: Gymshark names new chief commercial officer amid US expansion - Retail Gazette | Tue, 25 Feb 2025 09:21:55 GMT | https://www.retailgazette.co.uk/blog/2025/02/gymshark-cco/
 ```
 
-The trace shows planner → search → planner → search → writer, with a final state of two tool calls, eight sources, and no search failure. The run demonstrates source gathering and routing; the writer is still a stub.
+The trace shows planner → search → planner → search → planner → writer, with a final state of two tool calls, eight sources, and no search failure. On its third visit, the planner returned `next_query=None` because it had planned both searches; the route sent the state to the writer. The run stopped because the planner had no next query, not because the eight-call budget was reached. The run demonstrates source gathering and routing; the writer is still a stub and leaves the shared `briefing` string empty.
 
 ## Developer setup and tests
 

@@ -32,6 +32,7 @@ def main() -> None:
         "sources": [],
         "tool_calls_used": 0,
         "search_failed": False,
+        "briefing": "",
     }
 
     print(f"Selected: {company['test_case_id']} — {company['prospect_company_name']}")
@@ -48,6 +49,7 @@ def main() -> None:
     print(f"Final tool calls: {final_state['tool_calls_used']}")
     print(f"Final source count: {len(final_state['sources'])}")
     print(f"Search failed: {final_state['search_failed']}")
+    print(f"Briefing generated: {bool(final_state['briefing'])}")
 
     for number, source in enumerate(final_state["sources"], start=1):
         print(
