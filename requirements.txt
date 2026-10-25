@@ -4,3 +4,4 @@ tavily-python
 langsmith
 python-dotenv
 pytest
+langgraph

@@ -1,0 +1,11 @@
+test_case_id,prospect_company_name,website_url,industry,employee_count_band,hq_country,assigned_rep,first_call_date,test_case_type,has_recent_news,force_search_timeout,notes
+TC-01,Allbirds,https://www.allbirds.com,Apparel,201-1000,US,Jonah Whitfield,2025-03-11,standard,true,false,Ticker BIRD returns investor pages too; homepage is the anchor
+TC-02,Gymshark,https://www.gymshark.com,Apparel,1001-5000,UK,Jonah Whitfield,2025-03-13,standard,true,false,
+TC-03,Brooklinen,https://www.brooklinen.com,Home Goods,201-1000,US,Camila Ferreira,2025-03-18,standard,true,false,
+TC-04,Present & Correct,https://www.presentandcorrect.com,Design Goods,1-10,UK,Camila Ferreira,2025-03-20,no_recent_news,false,false,Small London shop; ampersand in name must survive query building
+TC-05,Bombas,https://www.bombas.com/,Consumer Retail,201-1000,US,Jonah Whitfield,2025-03-25,standard,true,false,
+TC-06,Koala,https://koala.com,Home Goods,201-1000,AU,Jonah Whitfield,2025-03-27,standard,true,false,Common word name; confirm results are the furniture brand
+TC-07,Parachute,https://www.parachutehome.com,Home Goods,201-1000,US,Jonah Whitfield,2025-04-01,forced_timeout,true,true,Harness raises timeout on first search call; writer stub must still run
+TC-08,Knix,https://knix.com,Apparel,201-1000,CA,Camila Ferreira,2025-04-03,standard,true,false,Region redirect between .com and .ca pages; either counts as a match
+TC-09,Olipop,https://drinkolipop.com,Food & Beverage,51-200,US,Jonah Whitfield,2025-04-09,standard,true,false,Official site sits on the drinkolipop.com domain
+TC-10,Poketo,https://www.poketo.com,Design Goods,11-50,US,Jonah Whitfield,2025-04-16,no_recent_news,false,false,Small shop; homepage and About page only

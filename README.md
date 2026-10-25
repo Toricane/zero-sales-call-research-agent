@@ -97,9 +97,40 @@ tests/test_validator.py::test_three_talking_points_are_required PASSED
 
 The additional citation test cites Asana's company page for a Gusto product claim and includes that page in `fetched_urls`. It passes only if the validator reports a citation-fit rejection based on the retrieved page content. The other added tests confirm that 9 tool calls, an empty section, and a section with only two talking points are rejected.
 
+## Research graph run record
+
+The LangGraph research run selected TC-02 (Gymshark), a standard first-call case with recent news expected and no forced timeout. The graph reached the writer stub after two Tavily search calls, with eight retained sources and `search_failed=False`. [View the LangSmith trace](https://smith.langchain.com/public/20aca7ac-c78e-4ebf-8cec-52392d2fb9e6/r/01a170ad-fdf5-764e-8a74-57c6296583b1?start_time=2026-10-25T01%3A30%3A13.365126Z).
+
+Commands: `.\.venv\Scripts\python.exe -m pytest -q` and `.\.venv\Scripts\python.exe -m src.run_research`
+
+```text
+.............                                                                                                                                                                                                         [100%]
+13 passed in 18.86s
+Selected: TC-02 — Gymshark
+Website: https://www.gymshark.com
+First call: 2025-03-13
+Recent news expected: True
+Forced timeout: False
+Initial tool calls: 0
+WRITER STUB REACHED — calls=2, sources=8, search_failed=False
+Final tool calls: 2
+Final source count: 8
+Search failed: False
+Source 1: Gymshark - Wikipedia | undated | https://en.wikipedia.org/wiki/Gymshark
+Source 2: All Products | Women's Gym Clothes | Gymshark | undated | https://www.gymshark.com/collections/all-products/womens
+Source 3: About us | Gymshark | undated | https://www.gymshark.com/pages/about-us
+Source 4: Gymshark Official Store | Gym Clothes & Workout Wear | Gymshark | undated | https://www.gymshark.com/pages/home_variant_b
+Source 5: Gymshark Company Overview, Contact Details & Competitors | LeadIQ | undated | https://leadiq.com/c/gymshark/5a1d98ba2300005200875c72
+Source 6: Best of 2024: Gymshark’s Ben Francis – ‘I want to be a globally iconic brand’ - Retail Gazette | Tue, 24 Dec 2024 06:30:45 GMT | https://www.retailgazette.co.uk/blog/2024/12/interview-gymsharks-stratford/
+Source 7: Gymshark names chief commerical officer - Retail Dive | Tue, 04 Mar 2025 17:50:39 GMT | https://www.retaildive.com/news/gymshark-chief-commerical-officer-kim-dolder/741388/
+Source 8: Gymshark names new chief commercial officer amid US expansion - Retail Gazette | Tue, 25 Feb 2025 09:21:55 GMT | https://www.retailgazette.co.uk/blog/2025/02/gymshark-cco/
+```
+
+The trace shows planner → search → planner → search → writer, with a final state of two tool calls, eight sources, and no search failure. The run demonstrates source gathering and routing; the writer is still a stub.
+
 ## Developer setup and tests
 
-Install `requirements.txt` and copy `.env.example` to local `.env` (ignored by Git). Keep `VALIDATOR_CLASSIFIER=jev` or omit it to use the default; set real `TYPESAFE_API_KEY` and `TAVILY_API_KEY` values. To use OpenRouter instead, set `VALIDATOR_CLASSIFIER=openrouter`, `OPENROUTER_API_KEY`, and optionally `OPENROUTER_MODEL`; Tavily is still required, while a TypeSafe key is not. Set a real `LANGSMITH_API_KEY` if tracing is enabled. Run `python -m pytest -v -s` to test the six supplied rows and added cases against live APIs and print the rejection reasons. The run record above covers Jev; the OpenRouter path has not been run here because no OpenRouter key is configured.
+Install `requirements.txt` and copy `.env.example` to local `.env` (ignored by Git). Keep `VALIDATOR_CLASSIFIER=jev` or omit it to use the default; set real `TYPESAFE_API_KEY` and `TAVILY_API_KEY` values. To use OpenRouter instead, set `VALIDATOR_CLASSIFIER=openrouter`, `OPENROUTER_API_KEY`, and optionally `OPENROUTER_MODEL`; Tavily is still required, while a TypeSafe key is not. Set a real `LANGSMITH_API_KEY` if tracing is enabled. Run `python -m pytest -v -s` to test the six supplied rows and added cases against live APIs and print the rejection reasons. The validator run record covers Jev; the OpenRouter path has not been run here because no OpenRouter key is configured.
 
 ## Rep usage instructions
 
