@@ -1,4 +1,5 @@
 import json
+from copy import deepcopy
 from pathlib import Path
 
 import pytest
@@ -27,3 +28,25 @@ def test_briefing(row):
         assert result.reasons == []
     else:
         assert any(expected_reasons[row["sample_id"]] in reason for reason in result.reasons)
+
+
+def test_fetched_but_unrelated_citation_is_rejected():
+    briefing = deepcopy(rows[0])
+    unrelated_url = rows[2]["fetched_urls"][1]  # Asana's company page
+    briefing["fetched_urls"].append(unrelated_url)
+    briefing["briefing_markdown"] = briefing["briefing_markdown"].replace(
+        "Gusto provides payroll, benefits and HR software built for small businesses "
+        "(https://gusto.com/about).",
+        "Gusto provides payroll, benefits and HR software built for small businesses "
+        f"({unrelated_url}).",
+        1,
+    )
+
+    result = validate_briefing(briefing)
+
+    assert result.valid is False
+    assert any(
+        reason.startswith(f"Citation does not fit retrieved content from {unrelated_url}")
+        and "Gusto provides payroll" in reason
+        for reason in result.reasons
+    ), result.reasons
