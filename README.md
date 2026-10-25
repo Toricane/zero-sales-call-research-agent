@@ -52,6 +52,8 @@ Tool calls used: N
 
 The validator checks the briefing format, citations, source content, intentional gap lines, and the tool-call budget. `expected_valid` is test metadata: pytest compares it with the validator's result. Tavily fetches claim-relevant page excerpts, retrying with advanced extraction when basic extraction returns no content. Jev scores whether the retrieved page is a relevant place to investigate that kind of claim. A page can pass this citation-fit check without stating every detail of the claim; an unrelated page or one that explicitly disproves the same fact should fail. A missing excerpt or citation-fit score below 0.66 fails validation. **Passing this check does not verify every factual detail in the briefing.** These six tests call the real APIs, so results can change with page content, retrieval, and Jev's judgment.
 
+`validate_briefing(briefing)` returns a `ValidationResult` with `valid: bool` and `reasons: list[str]`. A valid briefing has an empty reasons list. For a rejected briefing, the list names the detected broken rules so a writer can revise the draft; validation continues after a broken rule to report other issues in the same briefing.
+
 ## Why Jev for citation classification
 
 - This step needs a yes/no classification score. TypeSafe's Jev `Noul` returns a numeric value from 0 to 1 directly, so the validator can apply its threshold without parsing generated prose. [TypeSafe's System One documentation](https://docs.typesafe.ai/concepts/system-one) describes the typed decisions and probabilities.
@@ -81,7 +83,7 @@ tests/test_validator.py::test_briefing[SB-04] PASSED                     [ 66%]
 tests/test_validator.py::test_briefing[SB-05] PASSED                     [ 83%]
 tests/test_validator.py::test_briefing[SB-06] PASSED                     [100%]
 
-============================= 6 passed in 34.98s ==============================
+============================= 6 passed in 11.36s ==============================
 ```
 
 
@@ -89,3 +91,5 @@ tests/test_validator.py::test_briefing[SB-06] PASSED                     [100%]
 ## Developer setup and tests
 
 Install `requirements.txt` and set real `TYPESAFE_API_KEY` and `TAVILY_API_KEY` values in local `.env` (ignored by Git). Run `python -m pytest -v` to test the six supplied rows against the live APIs.
+
+## Rep usage instructions
